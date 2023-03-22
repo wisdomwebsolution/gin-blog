@@ -10,7 +10,7 @@ import (
 
 type PostShow struct {
 	models.Post
-	Author models.UserPublic
+	Author models.UserPublic `json:"author"`
 }
 
 func Index(c *gin.Context) {
@@ -78,4 +78,17 @@ func Update(c *gin.Context) {
 	db.Model(&models.Post{}).Where("id =?", postId).Updates(&post)
 
 	c.JSON(http.StatusOK, post)
+}
+
+func Show(c *gin.Context) {
+	postId := c.Param("id")
+
+	db, err := models.Database()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	var post PostShow
+	db.Model(&models.Post{}).Where("posts.id = ?", postId).Joins("Author").First(&post)
+	c.JSON(http.StatusOK, &post)
 }

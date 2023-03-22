@@ -7,5 +7,5 @@ type Post struct {
 	Title    string `json:"title" gorm:"required"`
 	Content  string `json:"content"`
 	AuthorID int
-	Author   User
+	Author   User `json:"author"`
 }

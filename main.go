@@ -51,6 +51,7 @@ func main() {
 
 	posts := apiRouter.Group("/posts")
 	posts.GET("/", post.Index)
+	posts.GET("/:id", post.Show)
 
 	docs.SwaggerInfo.BasePath = "/api"
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
