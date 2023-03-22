@@ -47,6 +47,7 @@ func main() {
 	authorized.GET("/test", Test)
 	authorized.GET("/me", auth.Currentuser)
 	authorized.POST("/posts", post.Create)
+	authorized.PUT("/posts/:id", post.Update)
 
 	posts := apiRouter.Group("/posts")
 	posts.GET("/", post.Index)

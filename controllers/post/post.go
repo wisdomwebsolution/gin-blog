@@ -54,3 +54,28 @@ func Create(c *gin.Context) {
 
 	c.JSON(http.StatusOK, newPost)
 }
+
+func Update(c *gin.Context) {
+	username := c.GetString("username")
+	postId := c.Param("id")
+	var post models.Post
+
+	if err := c.ShouldBindJSON(&post); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	db, err := models.Database()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	var user models.User
+	db.Where("username =?", username).Find(&user)
+
+	post.Author = user
+
+	db.Model(&models.Post{}).Where("id =?", postId).Updates(&post)
+
+	c.JSON(http.StatusOK, post)
+}
