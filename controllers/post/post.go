@@ -92,3 +92,15 @@ func Show(c *gin.Context) {
 	db.Model(&models.Post{}).Where("posts.id = ?", postId).Joins("Author").First(&post)
 	c.JSON(http.StatusOK, &post)
 }
+
+func Delete(c *gin.Context) {
+	postId := c.Param("id")
+
+	db, err := models.Database()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	db.Where("id =?", postId).Delete(&models.Post{})
+	c.JSON(http.StatusOK, gin.H{"message": "success"})
+}
