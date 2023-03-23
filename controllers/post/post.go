@@ -58,9 +58,9 @@ func Create(c *gin.Context) {
 func Update(c *gin.Context) {
 	username := c.GetString("username")
 	postId := c.Param("id")
-	var post models.Post
+	var postInput NewPost
 
-	if err := c.ShouldBindJSON(&post); err != nil {
+	if err := c.ShouldBindJSON(&postInput); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
@@ -71,11 +71,16 @@ func Update(c *gin.Context) {
 	}
 
 	var user models.User
+	var post models.Post
 	db.Where("username =?", username).Find(&user)
+	db.Where("id =?", postId).Find(&post)
 
-	post.Author = user
+	if user.ID != uint(post.AuthorID) {
+		c.JSON(http.StatusForbidden, "You are not the author")
+		return
+	}
 
-	db.Model(&models.Post{}).Where("id =?", postId).Updates(&post)
+	db.Model(&post).Where("id =?", postId).Updates(&models.Post{Title: postInput.Title, Content: postInput.Content})
 
 	c.JSON(http.StatusOK, post)
 }
@@ -94,6 +99,7 @@ func Show(c *gin.Context) {
 }
 
 func Delete(c *gin.Context) {
+	username := c.GetString("username")
 	postId := c.Param("id")
 
 	db, err := models.Database()
@@ -101,6 +107,17 @@ func Delete(c *gin.Context) {
 		log.Fatal(err.Error())
 	}
 
-	db.Where("id =?", postId).Delete(&models.Post{})
+	var user models.User
+	var post models.Post
+	db.Where("username =?", username).Find(&user)
+	db.Where("id =?", postId).Find(&post)
+
+	if user.ID != uint(post.AuthorID) {
+		c.JSON(http.StatusForbidden, "You are not the author")
+		return
+	}
+
+	db.Delete(&post)
+
 	c.JSON(http.StatusOK, gin.H{"message": "success"})
 }
