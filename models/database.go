@@ -15,7 +15,7 @@ func Database() (*gorm.DB, error) {
 		log.Println(err)
 	}
 
-	if err = db.AutoMigrate(&User{}, &Post{}); err != nil {
+	if err = db.AutoMigrate(&User{}, &Post{}, &Tag{}); err != nil {
 		log.Println(err)
 	}
 

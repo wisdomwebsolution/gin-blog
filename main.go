@@ -3,6 +3,7 @@ package main
 import (
 	"gin-blog/controllers/auth"
 	"gin-blog/controllers/post"
+	"gin-blog/controllers/tag"
 	"gin-blog/controllers/user"
 	"gin-blog/middlewares"
 	"log"
@@ -42,6 +43,7 @@ func main() {
 	apiRouter.GET("/users", user.Index)
 	apiRouter.POST("/register", auth.Register)
 	apiRouter.POST("/login", auth.Login)
+	apiRouter.GET("/tags", tag.Index)
 
 	authorized.Use(middlewares.AuthenticationMiddleware())
 	authorized.GET("/test", Test)
